@@ -27,7 +27,7 @@
 <%= form_for :setting do |f| %>
 <% end %>
 <!-- END -->
-<% @temp_note_setting = IssueTemplateNoteSetting.find("1") %>
+<% @temp_note_setting = IssueTemplateNoteSetting.find_or_create_by(id: 1) { |s| s.user_auth = ['0'] } %>
 
 <h2><%= l(:txt_permissions)%></h2>
 <%= labelled_form_for :user_auth, @temp_note_setting.user_auth,

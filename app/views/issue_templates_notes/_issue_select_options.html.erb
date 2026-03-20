@@ -73,7 +73,7 @@
   }
   </script>
 
-<% return '' unless @project.module_enabled? :issue_templates_notes %>
+<% return '' unless @project&.module_enabled?(:issue_templates_notes) %>
 
 <br/>
 <br/>

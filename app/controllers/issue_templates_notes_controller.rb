@@ -4,7 +4,6 @@ class IssueTemplatesNotesController < ApplicationController
   helper :issues
   include IssuesHelper
   before_action :find_user
-  before_action :authorize => :preview
   before_action :require_login, :require_access_to
   def index
     @issue_templates_notes = IssueTemplatesNote.order(:tracker_id)
@@ -29,7 +28,7 @@ class IssueTemplatesNotesController < ApplicationController
       @issue_templates_note.safe_attributes = params[:issue_templates_note]
       if @issue_templates_note.save
         flash[:notice] = l(:notice_successful_create)
-        redirect_to redirect_to issue_templates_notes_url
+        redirect_to issue_templates_notes_url
       end
     end
   end
@@ -57,7 +56,7 @@ class IssueTemplatesNotesController < ApplicationController
   def update
     @issue_templates_note = IssueTemplatesNote.find(params[:id])
     respond_to do |format|
-      if @issue_templates_note.update_attributes(issue_templates_note_params)
+      if @issue_templates_note.update(issue_templates_note_params)
         format.html {
           flash[:notice] = l(:msg_notice_sucess_updated)
           redirect_to :contoller => "issues_templates_notes",:action => "index"
@@ -92,12 +91,14 @@ class IssueTemplatesNotesController < ApplicationController
   end
 
   def require_access_to
-    @issue_templates_notes_setting = IssueTemplateNoteSetting.find("1")
-    saved = @issue_templates_notes_setting[:user_auth]
-    if(saved.include?("#{User.current.id}") || User.current.admin?)
-      return true
+    return true if User.current.admin?
+
+    @issue_templates_notes_setting = IssueTemplateNoteSetting.find_by(id: 1)
+    if @issue_templates_notes_setting
+      saved = @issue_templates_notes_setting[:user_auth] || []
+      return true if saved.include?(User.current.id.to_s)
     end
-      render_403
+    render_403
   end
 
   private

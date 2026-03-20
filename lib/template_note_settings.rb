@@ -1,7 +1,8 @@
 class TemplateNoteSettings
   def authorized_users
-    @issue_templates_notes_setting = IssueTemplateNoteSetting.find("1")
-    saved = @issue_templates_notes_setting[:user_auth]
-    return saved
+    setting = IssueTemplateNoteSetting.find_by(id: 1)
+    setting&.user_auth || []
+  rescue ActiveRecord::StatementInvalid
+    []
   end
 end

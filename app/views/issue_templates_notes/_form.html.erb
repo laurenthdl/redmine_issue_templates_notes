@@ -2,9 +2,9 @@
 <% if @issue_templates_note.errors.any? %>
 <div id="errorExplanation">
 	<ul>
-		<% @issue_templates_note.errors.each do |msg| %>
+		<% @issue_templates_note.errors.full_messages.each do |msg| %>
 		<li>
-			<%= l(:msg_confirm_fields) %> &nbsp;<%= l(msg) %>
+			<%= msg %>
 		</li>
 		<% end %>
 	</ul>
