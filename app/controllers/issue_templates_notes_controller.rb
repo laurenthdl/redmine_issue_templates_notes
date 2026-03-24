@@ -4,7 +4,8 @@ class IssueTemplatesNotesController < ApplicationController
   helper :issues
   include IssuesHelper
   before_action :find_user
-  before_action :require_login, :require_access_to
+  before_action :require_login
+  before_action :require_access_to, except: [:template_send]
   def index
     @issue_templates_notes = IssueTemplatesNote.order(:tracker_id)
     @user_logged = User.current
