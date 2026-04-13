@@ -7,7 +7,7 @@ $(function () {
 
 function hidden_button() {
 
-    $("#settings").find("input[name=commit]").css("display", "none");
+    $("#settings.plugin-redmine_issue_templates_notes").find("input[name=commit]").css("display", "none");
 }
 
 function submitPreview(url, form, target) {

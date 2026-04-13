@@ -1,0 +1,28 @@
+<%= title [l(:label_plugins), {:controller => 'admin', :action => 'plugins'}],
+         l(:template_notes) + ' - ' + l(:txt_permissions) %>
+
+<%= labelled_form_for :user_auth, @issue_templates_notes_setting.user_auth,
+            :url => {:controller => 'issue_templates_notes_settings',
+                     :action => 'user_auth'},
+            :html => {:id => 'issue_templates_notes_settings' } do |f| %>
+  <table class="list groups">
+    <thead>
+    <tr>
+      <th style="text-align: left"><%= l(:txt_user) %></th>
+      <th><%= l(:txt_usage_plugin) %></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% User.where('id != ? AND status = ?', 1, 1).order('firstname').each do |user| %>
+      <tr>
+        <td style="text-align: left"><%= user.firstname %></td>
+        <td>
+          <%= hidden_field_tag('seen[]', user.id) %>
+          <%= check_box_tag 'activated[]', user.id, @issue_templates_notes_setting.user_auth.include?("#{user.id}") %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <%= f.submit l(:txt_send), :name => 'commit_users_auth' %>
+<% end %>

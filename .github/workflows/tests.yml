@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: test ruby-${{ matrix.ruby }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby: ['3.2', '3.3', '3.4']
+      fail-fast: false
+
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
+      - name: Checkout Redmine 6.1-stable
+        uses: actions/checkout@v4
+        with:
+          repository: redmine/redmine
+          ref: 6.1-stable
+          path: redmine
+
+      - name: Install plugin into Redmine
+        run: |
+          rm -rf redmine/plugins/redmine_issue_templates_notes
+          cp -a plugin redmine/plugins/redmine_issue_templates_notes
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          working-directory: redmine
+
+      - name: Configure database (sqlite3)
+        working-directory: redmine
+        run: |
+          mkdir -p config
+          cat > config/database.yml <<'YAML'
+          test:
+            adapter: sqlite3
+            database: db/test.sqlite3
+          development:
+            adapter: sqlite3
+            database: db/development.sqlite3
+          YAML
+
+      - name: Generate secret token
+        working-directory: redmine
+        run: bundle exec rake generate_secret_token
+
+      - name: Create and migrate database
+        working-directory: redmine
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rake db:create
+          bundle exec rake db:migrate
+          bundle exec rake redmine:plugins:migrate
+
+      - name: Run plugin tests
+        working-directory: redmine
+        env:
+          RAILS_ENV: test
+        run: bin/rails test plugins/redmine_issue_templates_notes/test

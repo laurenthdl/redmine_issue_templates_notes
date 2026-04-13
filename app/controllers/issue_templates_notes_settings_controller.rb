@@ -1,9 +1,11 @@
 class IssueTemplatesNotesSettingsController < ApplicationController
+  layout 'admin'
+
   before_action :require_login
   before_action :require_admin
 
   def back_partial_init
-    render :partial => "redmine_notes"
+    redirect_to plugin_settings_path(:redmine_issue_templates_notes)
   end
 
   def new
@@ -23,12 +25,11 @@ class IssueTemplatesNotesSettingsController < ApplicationController
         saved -= delete_ids
         @issue_templates_notes_setting.update!(user_auth: saved)
         flash[:notice] = l(:notice_successful_update)
-        redirect_to controller: 'issue_templates_notes_settings', action: "back_partial_init"
       else
         @issue_templates_notes_setting.update!(user_auth: ['0'])
         flash[:notice] = l(:notice_successful_update)
-        redirect_to controller: 'issue_templates_notes_settings', action: "back_partial_init"
       end
+      redirect_to plugin_settings_path(:redmine_issue_templates_notes)
     end
   end
 end

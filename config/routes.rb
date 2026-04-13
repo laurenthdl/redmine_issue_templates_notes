@@ -1,12 +1,12 @@
 Rails.application.routes.draw do
 
   resources :issue_templates_notes
-  resources :issue_templates_notes_settings
+  resources :issue_templates_notes_settings do
+    collection do
+      get :back_partial_init
+    end
+  end
 
-  match 'settings/plugin/redmine_issue_templates_notes',
-        :controller  => 'issue_templates_notes_settings',
-        :action => 'back_partial_init',
-        :via => :get
 
   match 'issue_templates_notes/:id/edit',
         :controller => 'issue_templates_notes',
@@ -23,7 +23,7 @@ Rails.application.routes.draw do
         :action => 'template_send',
         :via => [:get,:post]
 
-  match 'settings/plugin/redmine_issue_templates_notes/users_authorization',
+  match 'issue_templates_notes_settings/user_auth',
         :controller => 'issue_templates_notes_settings',
         :action => 'user_auth',
         :via => [:get,:post]
